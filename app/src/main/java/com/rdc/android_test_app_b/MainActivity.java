@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private void closeActivity() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("WARNING")
-                .setMessage("Sorry, but you can't call this app from launcher, Please, open first app for following work." +
+                .setMessage("Sorry, but you can't call this app from launcher. Please, open first app for following work." +
                         '\n' + "This app will be automatically close in 10 seconds.")
                 .setCancelable(false)
                 .setNegativeButton("BACK",
