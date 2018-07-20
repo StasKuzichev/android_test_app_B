@@ -1,6 +1,7 @@
 package com.rdc.android_test_app_b;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,14 +13,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        closeActivity();
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 10000);
+        String text = "";
+        text = getIntent().getStringExtra("param1");
+        boolean check = getIntent().getBooleanExtra("bool", false);
+
+        if (check) {
+            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+            intent.putExtra("url", text);
+            startActivity(intent);
+        } else {
+            closeActivity();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            }, 10000);
+        }
     }
 
     private void closeActivity() {
