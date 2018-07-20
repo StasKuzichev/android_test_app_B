@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">android_test_app_B</string>
+    <string name="btn_del">Delete Link</string>
 </resources>
