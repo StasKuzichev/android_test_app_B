@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,14 +15,18 @@ public class SecondActivity extends AppCompatActivity {
 
 
     ImageView out_image;
+    TextView t_hint_del_link;
+    Button b_del_link;
     String url = "";
-    int status = 0;
+    int status = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
+        t_hint_del_link = findViewById(R.id.t_hint_del_link);
+        b_del_link = findViewById(R.id.b_del_link);
         out_image = findViewById(R.id.imageViewOut);
 
         Intent get_link = getIntent();
@@ -49,6 +54,12 @@ public class SecondActivity extends AppCompatActivity {
                 });
     }
     public void nextAct(int status){
-
+        if(status==1){
+            t_hint_del_link.setVisibility(TextView.VISIBLE);
+            b_del_link.setVisibility(Button.VISIBLE);
+        }else{
+            t_hint_del_link.setVisibility(TextView.INVISIBLE);
+            b_del_link.setVisibility(Button.INVISIBLE);
+        }
     }
 }
