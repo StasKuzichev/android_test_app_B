@@ -2,14 +2,16 @@ package com.rdc.android_test_app_b;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-String status="sdv";
-String st="ff";
+
+    Button btn = (Button) findViewById(R.id.button) ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,14 @@ String st="ff";
                 }
             }, 10000);
         }
+        int i =0;
+        if(i == 0){
+
+        }else if(i == 1){
+            btn.setVisibility(Button.VISIBLE);
+        }else{
+
+        }
     }
 
     private void closeActivity() {
@@ -49,5 +59,10 @@ String st="ff";
                         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+    public void onButtonClick(View view)
+    {
+       String url="";
+       url=null;
     }
 }
