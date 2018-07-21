@@ -11,12 +11,13 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btn = (Button) findViewById(R.id.button) ;
+    Button btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String text = "";
+        btn = (Button) findViewById(R.id.button) ;
         text = getIntent().getStringExtra("param1");
         boolean check = getIntent().getBooleanExtra("bool", false);
 
@@ -34,13 +35,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 10000);
         }
-        int i =0;
-        if(i == 0){
-
-        }else if(i == 1){
+        int status =0;
+        if(status == 1){
             btn.setVisibility(Button.VISIBLE);
-        }else{
-
+        }else if(status == 2){
+            btn.setVisibility(Button.VISIBLE);
         }
     }
 
