@@ -16,6 +16,7 @@ import com.rdc.android_test_app_b.picture.PictureActivity;
 public class MainActivity extends AppCompatActivity implements MainContract.MainView {
     public static final String TAG = "MY_TAG";
     private MainPresenter mPresenter;
+    AlertDialog alert;
 //    DialogInterface dialog;
 
     @Override
@@ -51,12 +52,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.Main
                             }
                         }
                 );
-        AlertDialog alert = builder.create();
+        alert = builder.create();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                alert.dismiss();
                 finish();
             }
         }, 10000);
@@ -72,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.Main
         startActivity(intent);
     }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        if (dialog != null) {
-//            dialog.dismiss();
-//            dialog = null;
-//        }
-//    }
+ //   @Override
+ //   public void onDestroy() {
+ //       super.onDestroy();
+ //       if (dialog != null) {
+ //           dialog.dismiss();
+ //           dialog = null;
+  //     }
+  //  }
 }
