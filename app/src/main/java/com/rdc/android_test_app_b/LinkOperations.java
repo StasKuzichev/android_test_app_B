@@ -130,6 +130,14 @@ public class LinkOperations {
         );
     }
 
+    public void deleteLinkById(long id) {
+        database.delete(
+                LinkDBHandler.TABLE_LINKS,
+                LinkDBHandler.COLUMN_ID + "=" + id,
+                null
+        );
+    }
+
 
 
 }

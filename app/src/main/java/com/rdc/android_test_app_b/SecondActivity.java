@@ -5,9 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,13 +21,17 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
+import utils.DownloadImage;
+
 public class SecondActivity extends AppCompatActivity {
     ImageView out_image;
     TextView t_hint_del_link;
     Button b_del_link;
     String url = "";
+    String tab_name = "";
     int status = 2;
     LinkOperations linkData;
+    public static final String TAG="my";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,7 @@ public class SecondActivity extends AppCompatActivity {
 
         Intent get_link = getIntent();
         url = get_link.getStringExtra("url");
+        tab_name = get_link.getStringExtra("type");
         Link link = new Link();
         linkData = new LinkOperations(this);
         linkData.open();
@@ -61,14 +68,28 @@ public class SecondActivity extends AppCompatActivity {
                         public void onSuccess() {
                             Toast.makeText(context, "Loading success", Toast.LENGTH_LONG).show();
                             status = 0;
-                            updateLinkStatus(linkId);
+                            Link link = linkData.getLink(linkId);
+                            if (tab_name.equals("history")) {
+                                DownloadImage.downloadFile(context, link);
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        linkData.deleteLinkById(linkId);
+                                        //TODO Send Request to app a to update history
+                                    }
+                                }, 15000);
+                            } else {
+                                updateLinkStatus(link);
+                            }
                         }
 
                         @Override
                         public void onError() {
                             Toast.makeText(context, "Loading error", Toast.LENGTH_LONG).show();
                             status = 1;
-                            updateLinkStatus(linkId);
+                            Link link = linkData.getLink(linkId);
+                            updateLinkStatus(link);
                         }
                     });
         } else {
@@ -86,8 +107,7 @@ public class SecondActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLinkStatus(long linkId) {
-        Link link = linkData.getLink(linkId);
+    private void updateLinkStatus(Link link) {
         link.setStatus(status);
         linkData.updateLink(link);
         nextAct(status);

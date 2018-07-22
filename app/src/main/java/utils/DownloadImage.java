@@ -12,9 +12,9 @@ import java.io.File;
 //прописана SD карта, но пишет во внутреннюю память телефона
 public class DownloadImage {
 
-    final String DIR_SD = "BIGDIG/test/B";
+    final static String DIR_SD = "BIGDIG/test/B";
 
-    public  void downloadFile(Context context, Link link) {
+    public static   void downloadFile(Context context, Link link) {
         //this.context = context;
         File direct = new File(Environment.getExternalStorageDirectory()+ DIR_SD);
 
