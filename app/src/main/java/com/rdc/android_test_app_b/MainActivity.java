@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
             intent.putExtra("url", linkToImg);
             startActivity(intent);
+            finish();
         } else {
             closeActivity();
             Handler handler = new Handler();
