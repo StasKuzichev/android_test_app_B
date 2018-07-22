@@ -9,19 +9,19 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdc.android_test_app_b.db.LinkOperations;
 import com.rdc.android_test_app_b.models.Link;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
-import utils.DownloadImage;
+import com.rdc.android_test_app_b.utils.DownloadImage;
 
 public class SecondActivity extends AppCompatActivity {
     ImageView out_image;

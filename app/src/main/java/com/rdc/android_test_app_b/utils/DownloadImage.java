@@ -1,4 +1,4 @@
-package utils;
+package com.rdc.android_test_app_b.utils;
 
 import android.app.DownloadManager;
 import android.content.Context;

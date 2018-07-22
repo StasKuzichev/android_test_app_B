@@ -1,4 +1,4 @@
-package com.rdc.android_test_app_b;
+package com.rdc.android_test_app_b.db;
 
 import android.content.ContentValues;
 import android.content.Context;
