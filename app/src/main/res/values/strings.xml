@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">android_test_app_B</string>
+    <string name="sd_card_not_available">SD-карта не готова</string>
 </resources>
