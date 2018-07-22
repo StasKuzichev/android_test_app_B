@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.rdc.android_test_app_b.db.LinkDBHandler;
 import com.rdc.android_test_app_b.models.Link;
+
 import java.util.ArrayList;
 import java.util.List;
 

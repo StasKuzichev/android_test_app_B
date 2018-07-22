@@ -5,7 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.rdc.android_test_app_b.Link;
+import com.rdc.android_test_app_b.models.Link;
 
 import java.io.File;
 //метод для сохранения картинки по URl
@@ -24,13 +24,13 @@ public class DownloadImage {
         //DownloadManager mgr = (DownloadManager) getBaseContext().getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager mgr = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 
-        Uri downloadUri = Uri.parse(link.getURL());
+        Uri downloadUri = Uri.parse(link.getUrl());
         DownloadManager.Request request = new DownloadManager.Request(downloadUri);
 
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
                 .setAllowedOverRoaming(false).setTitle("Download")
                 .setDescription("Something useful.")
-                .setDestinationInExternalPublicDir(DIR_SD, LinkUtil.getDateLink(link) + ".jpg");
+                .setDestinationInExternalPublicDir(DIR_SD, link.getCreatedAt() + ".jpg");
 
         mgr.enqueue(request);
     }

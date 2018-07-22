@@ -14,7 +14,6 @@ public class Link {
     }
 
     public Link() {
-
     }
 
     public long getId() {

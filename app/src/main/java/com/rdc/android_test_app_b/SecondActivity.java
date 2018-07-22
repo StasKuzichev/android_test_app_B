@@ -14,16 +14,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdc.android_test_app_b.models.Link;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
+
 public class SecondActivity extends AppCompatActivity {
-
-
     ImageView out_image;
     TextView t_hint_del_link;
     Button b_del_link;
     String url = "";
     int status = 2;
+    LinkOperations linkData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +38,22 @@ public class SecondActivity extends AppCompatActivity {
 
         Intent get_link = getIntent();
         url = get_link.getStringExtra("url");
-        Toast.makeText(this, url, Toast.LENGTH_LONG).show();
-
-        loadImgByUrl(url, out_image, this);
+        Link link = new Link();
+        linkData = new LinkOperations(this);
+        linkData.open();
+        link.setUrl(url);
+        // TODO change this to class constant
+        link.setStatus(2);
+        String createdAt = new Date().toString();
+        link.setCreatedAt(createdAt);
+        linkData.addLink(link);
+        long linkId = link.getId();
+        loadImgByUrl(url, out_image, this, linkId);
     }
-    public void loadImgByUrl(String url, ImageView imageView, final Context context) {
-        if(internetConnection(context)) {
-            Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher)               //default image(error)
+
+    public void loadImgByUrl(String url, ImageView imageView, final Context context, final long linkId) {
+        if (internetConnection(context)) {
+            Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
                     .into(imageView, new com.squareup.picasso.Callback() {
 
@@ -50,35 +61,43 @@ public class SecondActivity extends AppCompatActivity {
                         public void onSuccess() {
                             Toast.makeText(context, "Loading success", Toast.LENGTH_LONG).show();
                             status = 0;
-                            nextAct(status);
+                            updateLinkStatus(linkId);
                         }
 
                         @Override
                         public void onError() {
                             Toast.makeText(context, "Loading error", Toast.LENGTH_LONG).show();
                             status = 1;
-                            nextAct(status);
+                            updateLinkStatus(linkId);
                         }
                     });
-        }else{
+        } else {
             AlertDialog.Builder no_internet_connection = new AlertDialog.Builder(this);
             no_internet_connection.setCancelable(false)
                     .setTitle("No internet connection!")
                     .setMessage("Please check your network connection and try again.")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                    finish();
-                }
-            }).show();
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                            finish();
+                        }
+                    }).show();
         }
     }
-    public void nextAct(int status){
-        if(status == 1){
+
+    private void updateLinkStatus(long linkId) {
+        Link link = linkData.getLink(linkId);
+        link.setStatus(status);
+        linkData.updateLink(link);
+        nextAct(status);
+    }
+
+    public void nextAct(int status) {
+        if (status == 1) {
             t_hint_del_link.setVisibility(TextView.VISIBLE);
             b_del_link.setVisibility(Button.VISIBLE);
-        }else{
+        } else {
             t_hint_del_link.setVisibility(TextView.INVISIBLE);
             b_del_link.setVisibility(Button.INVISIBLE);
         }
@@ -90,24 +109,22 @@ public class SecondActivity extends AppCompatActivity {
         });
 
     }
-    public static boolean internetConnection(final Context context)
-    {
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    public static boolean internetConnection(final Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
+        if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;
         }
         wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
+        if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;
         }
         wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
+        if (wifiInfo != null && wifiInfo.isConnected()) {
             return true;
         }
         return false;
     }
+
 }
