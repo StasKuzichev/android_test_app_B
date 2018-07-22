@@ -1,43 +1,30 @@
 package com.rdc.android_test_app_b;
 
-import android.app.DownloadManager;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     //переменная для директории
-
+    String linkToImg = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String text = "";
-        text = getIntent().getStringExtra("param1");
+
+        linkToImg = getIntent().getStringExtra("url_from_A");
+
         boolean check = getIntent().getBooleanExtra("bool", false);
 
         if (check) {
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-            intent.putExtra("url", text);
+            intent.putExtra("url", linkToImg);
             startActivity(intent);
+            finish();
         } else {
             closeActivity();
             Handler handler = new Handler();
@@ -49,9 +36,6 @@ public class MainActivity extends AppCompatActivity {
             }, 10000);
         }
     }
-
-
-
 
     private void closeActivity() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
