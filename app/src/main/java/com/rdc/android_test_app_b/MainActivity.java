@@ -17,12 +17,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         boolean check = getIntent().getBooleanExtra("bool", false);
+        String tab_name = getIntent().getStringExtra("type");
 
         if (check) {
             Log.d(TAG, (String) getIntent().getStringExtra("url"));
             String linkToImg = getIntent().getStringExtra("url");
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
             intent.putExtra("url", linkToImg);
+            intent.putExtra("type", tab_name);
             startActivity(intent);
             finish();
         } else {
