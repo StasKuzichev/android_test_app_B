@@ -6,21 +6,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
-    //переменная для директории
-    String linkToImg = "";
+    public static final String TAG = "MY_TAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        linkToImg = getIntent().getStringExtra("url_from_A");
-
         boolean check = getIntent().getBooleanExtra("bool", false);
 
         if (check) {
+            Log.d(TAG, (String) getIntent().getStringExtra("url"));
+            String linkToImg = getIntent().getStringExtra("url");
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
             intent.putExtra("url", linkToImg);
             startActivity(intent);

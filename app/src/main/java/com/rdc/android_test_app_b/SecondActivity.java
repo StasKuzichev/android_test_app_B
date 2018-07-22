@@ -36,6 +36,8 @@ public class SecondActivity extends AppCompatActivity {
 
         Intent get_link = getIntent();
         url = get_link.getStringExtra("url");
+        Toast.makeText(this, url, Toast.LENGTH_LONG).show();
+
         loadImgByUrl(url, out_image, this);
     }
     public void loadImgByUrl(String url, ImageView imageView, final Context context) {
