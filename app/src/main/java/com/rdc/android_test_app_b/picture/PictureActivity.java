@@ -1,4 +1,4 @@
-package com.rdc.android_test_app_b;
+package com.rdc.android_test_app_b.picture;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdc.android_test_app_b.R;
 import com.rdc.android_test_app_b.db.LinkOperations;
 import com.rdc.android_test_app_b.models.Link;
 import com.squareup.picasso.Picasso;
@@ -23,7 +24,7 @@ import java.util.Date;
 
 import com.rdc.android_test_app_b.utils.DownloadImage;
 
-public class SecondActivity extends AppCompatActivity {
+public class PictureActivity extends AppCompatActivity implements PictureContract.PictureView {
     ImageView out_image;
     TextView t_hint_del_link;
     Button b_del_link;
@@ -36,7 +37,7 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.picture_activity);
 
         t_hint_del_link = findViewById(R.id.t_hint_del_link);
         b_del_link = findViewById(R.id.b_del_link);

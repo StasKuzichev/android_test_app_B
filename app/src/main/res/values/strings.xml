@@ -3,4 +3,7 @@
     <string name="hint_ldel_link">Your link calls error!</string>
     <string name="b_del_link">Delete this link</string>
     <string name="sd_card_not_available">SD-карта не готова</string>
+    <string name="warning_dialog">Sorry, but you can\'t call this app from launcher. Please, open first app for following work. \nThis app will be automatically close in 10 seconds.</string>
+    <string name="back">BACK</string>
+    <string name="warning">WARNING</string>
 </resources>
