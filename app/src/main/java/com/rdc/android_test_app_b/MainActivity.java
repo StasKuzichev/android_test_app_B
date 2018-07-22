@@ -1,21 +1,14 @@
 package com.rdc.android_test_app_b;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
-
-
+    //переменная для директории
     String linkToImg = "";
 
     @Override
@@ -59,5 +52,6 @@ public class MainActivity extends AppCompatActivity {
                         });
         AlertDialog alert = builder.create();
         alert.show();
+
     }
 }

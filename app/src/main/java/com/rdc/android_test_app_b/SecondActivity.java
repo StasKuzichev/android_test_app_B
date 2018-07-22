@@ -83,7 +83,7 @@ public class SecondActivity extends AppCompatActivity {
         b_del_link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+
             }
         });
 

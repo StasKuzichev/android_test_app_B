@@ -10,6 +10,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    useLibrary  'org.apache.http.legacy'
     buildTypes {
         release {
             minifyEnabled false
@@ -29,4 +30,8 @@ dependencies {
     implementation files('libs/picasso-2.71828-sources.jar')
     implementation files('libs/picasso-2.71828-javadoc.jar')
     implementation 'com.squareup.picasso:picasso:2.3.2'
+
+    //подключена библиотека Picasso
+//    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'commons-io:commons-io:2.4'
 }
