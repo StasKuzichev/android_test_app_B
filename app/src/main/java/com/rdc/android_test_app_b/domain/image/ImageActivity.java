@@ -1,4 +1,4 @@
-package com.rdc.android_test_app_b;
+package com.rdc.android_test_app_b.domain.image;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,42 +9,52 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rdc.android_test_app_b.LinkOperations;
+import com.rdc.android_test_app_b.R;
 import com.rdc.android_test_app_b.models.Link;
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
-import utils.DownloadImage;
+import com.rdc.android_test_app_b.utils.DownloadImage;
 
-public class SecondActivity extends AppCompatActivity {
-    ImageView out_image;
-    TextView t_hint_del_link;
-    Button b_del_link;
-    String url = "";
-    String tab_name = "";
-    int status = 2;
-    LinkOperations linkData;
-    public static final String TAG="my";
+public class ImageActivity extends AppCompatActivity implements ImageContract.View {
+
+    private ImageView outImage;
+    private TextView textView;
+    private Button buttonDeleteLink;
+    private String url = "";
+    private String tabName = "";
+    private int status = 2;
+    private LinkOperations linkData;
+    private ImagePresenter imagePresenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.activity_image);
 
-        t_hint_del_link = findViewById(R.id.t_hint_del_link);
-        b_del_link = findViewById(R.id.b_del_link);
-        out_image = findViewById(R.id.imageViewOut);
+        textView = findViewById(R.id.textHintDeleteLink);
+        buttonDeleteLink = findViewById(R.id.buttonDeleteLink);
+        outImage = findViewById(R.id.imageViewOut);
+        imagePresenter = new ImagePresenter();
+        imagePresenter.setView(this);
+        getValues();
+    }
 
-        Intent get_link = getIntent();
-        url = get_link.getStringExtra("url");
-        tab_name = get_link.getStringExtra("type");
+
+    @Override
+    public void getValues() {
+        Intent getLink = getIntent();
+        url = getLink.getStringExtra("url");
+        tabName = getLink.getStringExtra("type");
         Link link = new Link();
         linkData = new LinkOperations(this);
         linkData.open();
@@ -55,11 +65,12 @@ public class SecondActivity extends AppCompatActivity {
         link.setCreatedAt(createdAt);
         linkData.addLink(link);
         long linkId = link.getId();
-        loadImgByUrl(url, out_image, this, linkId);
+        loadImgByUrl(url, outImage, this, linkId);
     }
 
+    @Override
     public void loadImgByUrl(String url, ImageView imageView, final Context context, final long linkId) {
-        if (internetConnection(context)) {
+        if (imagePresenter.internetConnection(context)) {
             Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
                     .into(imageView, new com.squareup.picasso.Callback() {
@@ -69,7 +80,7 @@ public class SecondActivity extends AppCompatActivity {
                             Toast.makeText(context, "Loading success", Toast.LENGTH_LONG).show();
                             status = 0;
                             Link link = linkData.getLink(linkId);
-                            if (tab_name.equals("history")) {
+                            if (tabName.equals("history")) {
                                 DownloadImage.downloadFile(context, link);
                                 Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
@@ -80,16 +91,15 @@ public class SecondActivity extends AppCompatActivity {
                                     }
                                 }, 15000);
                             } else {
-                                updateLinkStatus(link);
+                                imagePresenter.updateLinkStatus(link, status, linkData);
                             }
                         }
-
                         @Override
                         public void onError() {
                             Toast.makeText(context, "Loading error", Toast.LENGTH_LONG).show();
                             status = 1;
                             Link link = linkData.getLink(linkId);
-                            updateLinkStatus(link);
+                            imagePresenter.updateLinkStatus(link, status, linkData);
                         }
                     });
         } else {
@@ -107,44 +117,20 @@ public class SecondActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLinkStatus(Link link) {
-        link.setStatus(status);
-        linkData.updateLink(link);
-        nextAct(status);
-    }
-
+    @Override
     public void nextAct(int status) {
         if (status == 1) {
-            t_hint_del_link.setVisibility(TextView.VISIBLE);
-            b_del_link.setVisibility(Button.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
+            buttonDeleteLink.setVisibility(View.VISIBLE);
         } else {
-            t_hint_del_link.setVisibility(TextView.INVISIBLE);
-            b_del_link.setVisibility(Button.INVISIBLE);
+            textView.setVisibility(View.INVISIBLE);
+            buttonDeleteLink.setVisibility(View.INVISIBLE);
         }
-        b_del_link.setOnClickListener(new View.OnClickListener() {
+        buttonDeleteLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
-
     }
-
-    public static boolean internetConnection(final Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            return true;
-        }
-        return false;
-    }
-
 }

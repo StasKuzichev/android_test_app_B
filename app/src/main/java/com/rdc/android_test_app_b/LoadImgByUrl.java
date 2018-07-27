@@ -1,3 +1,4 @@
+/*
 package com.rdc.android_test_app_b;
 
 import android.content.Context;
@@ -42,3 +43,4 @@ public class LoadImgByUrl {
 //        this.linkStatus = linkStatus;
 //    }
 }
+*/
