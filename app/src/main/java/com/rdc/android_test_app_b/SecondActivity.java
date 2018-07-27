@@ -1,5 +1,7 @@
 package com.rdc.android_test_app_b;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,7 +33,7 @@ public class SecondActivity extends AppCompatActivity {
     String tab_name = "";
     int status = 2;
     LinkOperations linkData;
-    public static final String TAG="my";
+    public static final String TAG = "my";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,5 +148,4 @@ public class SecondActivity extends AppCompatActivity {
         }
         return false;
     }
-
 }
