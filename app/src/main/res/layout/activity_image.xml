@@ -12,12 +12,12 @@
 
     <Button
         style="@style/Button"
-        android:id="@+id/b_del_link"
+        android:id="@+id/buttonDeleteLink"
         android:text="@string/b_del_link" />
 
     <TextView
         style="@style/TextView"
-        android:id="@+id/t_hint_del_link"
+        android:id="@+id/textHintDeleteLink"
         android:text="@string/hint_ldel_link" />
 
 </RelativeLayout>

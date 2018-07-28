@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SecondActivity.ImageActivity"></activity>
+        <activity android:name=".domain.image.ImageActivity"></activity>
     </application>
 
 </manifest>
