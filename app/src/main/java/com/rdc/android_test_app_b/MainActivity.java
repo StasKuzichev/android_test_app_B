@@ -8,6 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.rdc.android_test_app_b.SecondActivity.ImageActivity;
+
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MY_TAG";
 
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         if (check) {
             Log.d(TAG, (String) getIntent().getStringExtra("url"));
             String linkToImg = getIntent().getStringExtra("url");
-            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+            Intent intent = new Intent(MainActivity.this, ImageActivity.class);
             intent.putExtra("url", linkToImg);
             intent.putExtra("type", tab_name);
             startActivity(intent);
