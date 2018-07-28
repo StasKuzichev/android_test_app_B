@@ -12,7 +12,7 @@ public class LinkTest {
         Link link = new Link();
         link.setStatus(6);
         int result = link.getStatus();
-        int expected = 3;
+        int expected = 6;
         assertEquals(expected, result);
     }
 }
