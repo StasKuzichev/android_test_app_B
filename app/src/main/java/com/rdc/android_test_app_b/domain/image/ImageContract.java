@@ -13,6 +13,10 @@ public interface ImageContract {
         void loadImgByUrl(String url, ImageView imageView, final Context context, final long linkId);
 
         void nextAct(int status);
+
+        void addLink(String url, String date, int status);
+
+        void deleteLink(long id);
     }
 
     interface Presenter {

@@ -10,9 +10,9 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void checking(boolean check, String type) {
+    public void checking(boolean check, String type, String idLink) {
         if(check){
-            view.transitionToAnotherActivity(type);
+            view.transitionToAnotherActivity(type, idLink);
         } else {
             view.closeActivity();
         }

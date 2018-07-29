@@ -14,6 +14,7 @@ import com.rdc.android_test_app_b.domain.image.ImageActivity;
 public class MainActivity extends AppCompatActivity implements MainContract.View {
     private boolean check;
     private String type;
+    private String idLink;
     private MainPresenter mainPresenter;
 
     @Override
@@ -23,18 +24,21 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
         check = getIntent().getBooleanExtra("bool", false);
         type = getIntent().getStringExtra("type");
+        idLink = getIntent().getStringExtra("idLink");
         mainPresenter = new MainPresenter();
         mainPresenter.setView(this);
-        mainPresenter.checking(check, type);
+        mainPresenter.checking(check, type, idLink);
     }
 
     @Override
-    public void transitionToAnotherActivity(String type) {
+    public void transitionToAnotherActivity(String type, String idLink) {
         String linkToImg = getIntent().getStringExtra("url");
         Intent intent = new Intent(MainActivity.this, ImageActivity.class);
         intent.putExtra("url", linkToImg);
         intent.putExtra("type", type);
+        intent.putExtra("idLink",idLink);
         startActivity(intent);
+
         finish();
     }
 
