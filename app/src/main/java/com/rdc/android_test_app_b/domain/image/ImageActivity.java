@@ -1,14 +1,19 @@
 package com.rdc.android_test_app_b.domain.image;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,7 +33,7 @@ import java.util.Date;
 import com.rdc.android_test_app_b.utils.DownloadImage;
 
 public class ImageActivity extends AppCompatActivity implements ImageContract.View {
-
+    private static final int PERMISSION_REQUEST_CODE = 123;
     private ImageView outImage;
     private TextView textView;
     private Button buttonDeleteLink;
@@ -53,7 +58,29 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
         getValues();
     }
 
-
+    private void requestStoragePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed to save your picture in the folder")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(ImageActivity.this,
+                                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                        }
+                    })
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        }
+    }
     @Override
     public void getValues() {
         Intent getLink = getIntent();
@@ -108,7 +135,12 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                             status = 0;
                             Link link = linkData.getLink(linkId);
                             if (tabName.equals("history")) {
-                                DownloadImage.downloadFile(context, link);
+                                requestStoragePermission();
+                                if (ContextCompat.checkSelfPermission(ImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    DownloadImage.downloadFile(context, link);
+                                } else {
+                                    Toast.makeText(context, "You did not give the permission so your picture won't be saved", Toast.LENGTH_SHORT).show();
+                                }
                                 Handler handler = new Handler();
                                 final int realId = Integer.parseInt(idLink);
                                 handler.postDelayed(new Runnable() {
