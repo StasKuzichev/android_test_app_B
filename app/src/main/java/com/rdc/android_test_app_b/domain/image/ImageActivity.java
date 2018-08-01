@@ -1,6 +1,8 @@
 package com.rdc.android_test_app_b.domain.image;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,6 +27,7 @@ import com.rdc.android_test_app_b.LinkOperations;
 import com.rdc.android_test_app_b.LinkProviderConstants;
 import com.rdc.android_test_app_b.R;
 import com.rdc.android_test_app_b.models.Link;
+import com.rdc.android_test_app_b.utils.AlarmReceiver;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -141,15 +144,15 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                                 } else {
                                     Toast.makeText(context, "You did not give the permission so your picture won't be saved", Toast.LENGTH_SHORT).show();
                                 }
+                                shit();
                                 Handler handler = new Handler();
                                 final int realId = Integer.parseInt(idLink);
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        deleteLink(realId);
-                                        Toast.makeText(context, "link was deleted", Toast.LENGTH_SHORT).show();
+                                        deleteLink(realId);;
                                     }
-                                }, 3000);
+                                }, 15000);
 
                             } else {
 
@@ -206,5 +209,11 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                 }
             }
         });
+    }
+    public void shit(){
+        Intent i = new Intent(ImageActivity.this, AlarmReceiver.class);
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),0, i, 0);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ 15000, pi);
     }
 }
