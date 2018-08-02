@@ -33,7 +33,7 @@ public class DownloadImage {
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE)
                     .setAllowedOverRoaming(false).setTitle("Download")
                     .setDescription("Something useful.")
-                    .setDestinationInExternalPublicDir(DIRECTORY_PICTURES,  ".jpg");
+                    .setDestinationInExternalPublicDir(DIR_SD, link.getCreatedAt() + ".jpg");
 
             mgr.enqueue(request);
     }

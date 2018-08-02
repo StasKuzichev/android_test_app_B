@@ -144,7 +144,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                                 } else {
                                     Toast.makeText(context, "You did not give the permission so your picture won't be saved", Toast.LENGTH_SHORT).show();
                                 }
-                                shit();
+                                alarmHandler();
                                 Handler handler = new Handler();
                                 final int realId = Integer.parseInt(idLink);
                                 handler.postDelayed(new Runnable() {
@@ -210,7 +210,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
             }
         });
     }
-    public void shit(){
+    public void alarmHandler(){
         Intent i = new Intent(ImageActivity.this, AlarmReceiver.class);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),0, i, 0);

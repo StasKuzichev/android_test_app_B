@@ -19,8 +19,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
 
-        mBuilder.setContentTitle("D");
-        mBuilder.setContentText("Hi, This is Android Notification Detail!");
+        mBuilder.setContentTitle("Notification");
+        mBuilder.setContentText("Link was deleted");
 
         final Intent resultIntent = new Intent(context, Notification.class);
         final TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
