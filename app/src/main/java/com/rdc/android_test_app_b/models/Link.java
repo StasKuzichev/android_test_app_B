@@ -6,16 +6,6 @@ public class Link {
     private int status;
     private String createdAt;
 
-    public Link(long id, String url, int status, String createdAt) {
-        this.id = id;
-        this.url = url;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    public Link() {
-    }
-
     public long getId() {
         return id;
     }

@@ -3,9 +3,6 @@ package com.rdc.android_test_app_b.domain.image;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,16 +13,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.rdc.android_test_app_b.LinkOperations;
-
-import com.rdc.android_test_app_b.LinkProviderConstants;
 import com.rdc.android_test_app_b.R;
 import com.rdc.android_test_app_b.models.Link;
 import com.rdc.android_test_app_b.utils.AlarmReceiver;
@@ -46,9 +39,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
     private int status = 2;
     private int gotStatus;
     private String idLink;
-    private LinkOperations linkData;
     private ImagePresenter imagePresenter;
-    private ContentResolver contentResolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +54,8 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
         getValues();
     }
 
-    private void requestStoragePermission() {
+    @Override
+    public void requestStoragePermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             new AlertDialog.Builder(this)
                     .setTitle("Permission needed")
@@ -94,64 +86,26 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
         tabName = getLink.getStringExtra("type");
         idLink = getLink.getStringExtra("idLink");
         gotStatus = getLink.getIntExtra("status", 5);
+        imagePresenter.setContentResolver(getContentResolver());
 
         Link link = new Link();
-        linkData = new LinkOperations(this);
-        linkData.open();
         link.setUrl(url);
+        link.setStatus(status);
 
-        contentResolver = getContentResolver();
-
-        // TODO change this to class constant
-        link.setStatus(2);
-        String createdAt = new Date().toString();
-        link.setCreatedAt(createdAt);
-        linkData.addLink(link);
-        long linkId = link.getId();
-
-        loadImgByUrl(url, outImage, this, linkId);
-        //Toast.makeText(this, "" + gotStatus, Toast.LENGTH_SHORT).show();
-    }
-
-    public void addLink(String url, String date, int status) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(LinkProviderConstants.COLUMN_URL, url);
-        contentValues.put(LinkProviderConstants.COLUMN_STATUS, status);
-        contentValues.put(LinkProviderConstants.COLUMN_DATE, date);
-        contentResolver.insert(LinkProviderConstants.CONTENT_URI, contentValues);
-    }
-
-    public void deleteLink(long id) {
-        String linkId = String.valueOf(id);
-        contentResolver.delete(LinkProviderConstants.CONTENT_URI,
-                LinkProviderConstants.COLUMN_LINK_ID + " = ?",
-                new String[]{linkId});
+        loadImgByUrl(url, outImage, this, link);
 
     }
-
-    public void updateLink(long id, int status) {
-        String linkId = String.valueOf(id);
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(LinkProviderConstants.COLUMN_STATUS, status);
-        String whereClause = LinkProviderConstants.COLUMN_LINK_ID + " = ?";
-        String[] whereValues = new String[]{linkId};
-
-        contentResolver.update(LinkProviderConstants.CONTENT_URI, contentValues, whereClause, whereValues);
-    }
-
 
     @Override
-    public void loadImgByUrl(final String url, ImageView imageView, final Context context,
-                             final long linkId) {
+    public void loadImgByUrl(final String url, ImageView imageView, final Context context, final Link link) {
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         final String dateStr = simpleDateFormat.format(date).toString();
-        final Link link = linkData.getLink(linkId);
+       // final Link localLink = link;
         if (imagePresenter.internetConnection(context)) {
             Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
                     .into(imageView, new com.squareup.picasso.Callback() {
-
 
                         @Override
                         public void onSuccess() {
@@ -160,7 +114,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                             if (tabName.equals("history")) {
                                 if (gotStatus == 2) {
                                     final int realId = Integer.parseInt(idLink);
-                                    updateLink(realId, 0);
+                                    imagePresenter.updateLink(realId, 0);
                                 } else {
                                     requestStoragePermission();
                                     if (ContextCompat.checkSelfPermission(ImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -174,14 +128,14 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            deleteLink(realId);
+                                            imagePresenter.deleteLink(realId);
 
                                         }
                                     }, 15000);
                                 }
                             } else {
-                                addLink(url, dateStr, status);
-                                imagePresenter.updateLinkStatus(link, status, linkData);
+                                imagePresenter.addLink(url, dateStr, status);
+                                nextAct(status);
                             }
                         }
 
@@ -192,19 +146,18 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                             if(tabName.equals("history")){
                                 if(gotStatus == 2){
                                     final int realId = Integer.parseInt(idLink);
-                                    updateLink(realId, 1);
+                                    imagePresenter.updateLink(realId, 1);
                                 }
                             }
-                            Link link = linkData.getLink(linkId);
-                            imagePresenter.updateLinkStatus(link, status, linkData);
+                            nextAct(status);
                         }
                     });
         } else {
             status = 2;
             if (tabName.equals("edit")) {
-                addLink(url, dateStr, status);
+                imagePresenter.addLink(url, dateStr, status);
             }
-            imagePresenter.updateLinkStatus(link, status, linkData);
+            nextAct(status);
             AlertDialog.Builder no_internet_connection = new AlertDialog.Builder(this);
             no_internet_connection.setCancelable(false)
                     .setTitle("No internet connection!")
@@ -214,10 +167,6 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.cancel();
                             finish();
-                            /*Intent intent = new Intent();
-                            intent.setComponent(new ComponentName("com.rdc.androidtestappa",
-                                    "com.rdc.androidtestappa.domain.MainActivity"));
-                            startActivity(intent);*/
                         }
                     }).show();
         }
@@ -240,12 +189,12 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
             @Override
             public void onClick(View view) {
                 if (tabName.equals("history")) {
-                    deleteLink(localId);
+                    imagePresenter.deleteLink(localId);
                 } else {
                     Date date = new Date();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
                     String dateStr = simpleDateFormat.format(date).toString();
-                    addLink(url, dateStr, 1);
+                    imagePresenter.addLink(url, dateStr, 1);
                     buttonDeleteLink.setVisibility(View.INVISIBLE);
                     textView.setText("Link was saved");
                 }
@@ -253,6 +202,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
         });
     }
 
+    @Override
     public void alarmHandler() {
         Intent i = new Intent(ImageActivity.this, AlarmReceiver.class);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);

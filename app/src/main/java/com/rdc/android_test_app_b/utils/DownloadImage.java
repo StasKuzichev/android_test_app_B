@@ -9,22 +9,17 @@ import com.rdc.android_test_app_b.models.Link;
 
 import java.io.File;
 
-import static android.os.Environment.DIRECTORY_PICTURES;
-
-//метод для сохранения картинки по URl
-//прописана SD карта, но пишет во внутреннюю память телефона
 public class DownloadImage {
 
-    final static String DIR_SD = "BIGDIG/test/B";
+    final static String DIR_SD = "sdcard/BIGDIG/test/B";
 
     public static   void downloadFile(Context context, Link link) {
-       // this.context = context;
-            File direct = new File(Environment.getExternalStorageDirectory()+ DIR_SD);
+
+            File direct = new File(Environment.getExternalStorageDirectory() + DIR_SD);
 
             if (!direct.exists()) {
                 direct.mkdirs();
             }
-            //DownloadManager mgr = (DownloadManager) getBaseContext().getSystemService(Context.DOWNLOAD_SERVICE);
             DownloadManager mgr = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 
             Uri downloadUri = Uri.parse(link.getUrl());
