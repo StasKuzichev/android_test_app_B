@@ -3,6 +3,7 @@ package com.rdc.android_test_app_b.domain.image;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -43,6 +44,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
     private String url = "";
     private String tabName = "";
     private int status = 2;
+    private int gotStatus;
     private String idLink;
     private LinkOperations linkData;
     private ImagePresenter imagePresenter;
@@ -70,7 +72,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ActivityCompat.requestPermissions(ImageActivity.this,
-                                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
                         }
                     })
                     .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -81,27 +83,34 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                     })
                     .create().show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
     }
+
     @Override
     public void getValues() {
         Intent getLink = getIntent();
         url = getLink.getStringExtra("url");
         tabName = getLink.getStringExtra("type");
         idLink = getLink.getStringExtra("idLink");
+        gotStatus = getLink.getIntExtra("status", 5);
+
         Link link = new Link();
         linkData = new LinkOperations(this);
         linkData.open();
         link.setUrl(url);
+
         contentResolver = getContentResolver();
+
         // TODO change this to class constant
         link.setStatus(2);
         String createdAt = new Date().toString();
         link.setCreatedAt(createdAt);
         linkData.addLink(link);
         long linkId = link.getId();
+
         loadImgByUrl(url, outImage, this, linkId);
+        //Toast.makeText(this, "" + gotStatus, Toast.LENGTH_SHORT).show();
     }
 
     public void addLink(String url, String date, int status) {
@@ -120,55 +129,82 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
 
     }
 
+    public void updateLink(long id, int status) {
+        String linkId = String.valueOf(id);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(LinkProviderConstants.COLUMN_STATUS, status);
+        String whereClause = LinkProviderConstants.COLUMN_LINK_ID + " = ?";
+        String[] whereValues = new String[]{linkId};
+
+        contentResolver.update(LinkProviderConstants.CONTENT_URI, contentValues, whereClause, whereValues);
+    }
+
 
     @Override
     public void loadImgByUrl(final String url, ImageView imageView, final Context context,
                              final long linkId) {
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        final String dateStr = simpleDateFormat.format(date).toString();
+        final Link link = linkData.getLink(linkId);
         if (imagePresenter.internetConnection(context)) {
             Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
                     .into(imageView, new com.squareup.picasso.Callback() {
-                        Date date = new Date();
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-                        String dateStr = simpleDateFormat.format(date).toString();
+
 
                         @Override
                         public void onSuccess() {
                             Toast.makeText(context, "Loading success", Toast.LENGTH_LONG).show();
                             status = 0;
-                            Link link = linkData.getLink(linkId);
                             if (tabName.equals("history")) {
-                                requestStoragePermission();
-                                if (ContextCompat.checkSelfPermission(ImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                                    DownloadImage.downloadFile(context, link);
+                                if (gotStatus == 2) {
+                                    final int realId = Integer.parseInt(idLink);
+                                    updateLink(realId, 0);
                                 } else {
-                                    Toast.makeText(context, "You did not give the permission so your picture won't be saved", Toast.LENGTH_SHORT).show();
-                                }
-                                alarmHandler();
-                                Handler handler = new Handler();
-                                final int realId = Integer.parseInt(idLink);
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        deleteLink(realId);;
+                                    requestStoragePermission();
+                                    if (ContextCompat.checkSelfPermission(ImageActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                        DownloadImage.downloadFile(context, link);
+                                    } else {
+                                        Toast.makeText(context, "You did not give the permission so your picture won't be saved", Toast.LENGTH_SHORT).show();
                                     }
-                                }, 15000);
+                                    alarmHandler();
+                                    Handler handler = new Handler();
+                                    final int realId = Integer.parseInt(idLink);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            deleteLink(realId);
 
+                                        }
+                                    }, 15000);
+                                }
                             } else {
-
                                 addLink(url, dateStr, status);
                                 imagePresenter.updateLinkStatus(link, status, linkData);
                             }
                         }
+
                         @Override
                         public void onError() {
                             Toast.makeText(context, "Loading error", Toast.LENGTH_LONG).show();
                             status = 1;
+                            if(tabName.equals("history")){
+                                if(gotStatus == 2){
+                                    final int realId = Integer.parseInt(idLink);
+                                    updateLink(realId, 1);
+                                }
+                            }
                             Link link = linkData.getLink(linkId);
                             imagePresenter.updateLinkStatus(link, status, linkData);
                         }
                     });
         } else {
+            status = 2;
+            if (tabName.equals("edit")) {
+                addLink(url, dateStr, status);
+            }
+            imagePresenter.updateLinkStatus(link, status, linkData);
             AlertDialog.Builder no_internet_connection = new AlertDialog.Builder(this);
             no_internet_connection.setCancelable(false)
                     .setTitle("No internet connection!")
@@ -178,6 +214,10 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.cancel();
                             finish();
+                            /*Intent intent = new Intent();
+                            intent.setComponent(new ComponentName("com.rdc.androidtestappa",
+                                    "com.rdc.androidtestappa.domain.MainActivity"));
+                            startActivity(intent);*/
                         }
                     }).show();
         }
@@ -188,7 +228,7 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
         if (status == 1) {
             textView.setVisibility(View.VISIBLE);
             buttonDeleteLink.setVisibility(View.VISIBLE);
-            if(tabName.equals("edit")){
+            if (tabName.equals("edit")) {
                 buttonDeleteLink.setText("SAVE ANYWAY");
             }
         } else {
@@ -199,21 +239,24 @@ public class ImageActivity extends AppCompatActivity implements ImageContract.Vi
         buttonDeleteLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(tabName.equals("history")){
+                if (tabName.equals("history")) {
                     deleteLink(localId);
                 } else {
                     Date date = new Date();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
                     String dateStr = simpleDateFormat.format(date).toString();
                     addLink(url, dateStr, 1);
+                    buttonDeleteLink.setVisibility(View.INVISIBLE);
+                    textView.setText("Link was saved");
                 }
             }
         });
     }
-    public void alarmHandler(){
+
+    public void alarmHandler() {
         Intent i = new Intent(ImageActivity.this, AlarmReceiver.class);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(),0, i, 0);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ 15000, pi);
+        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0, i, 0);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pi);
     }
 }

@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private String type;
     private String idLink;
     private MainPresenter mainPresenter;
+    private int status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         check = getIntent().getBooleanExtra("bool", false);
         type = getIntent().getStringExtra("type");
         idLink = getIntent().getStringExtra("idLink");
+
+        status = getIntent().getIntExtra("status", 5);
         mainPresenter = new MainPresenter();
         mainPresenter.setView(this);
         mainPresenter.checking(check, type, idLink);
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         intent.putExtra("url", linkToImg);
         intent.putExtra("type", type);
         intent.putExtra("idLink",idLink);
+        intent.putExtra("status", status);
         startActivity(intent);
 
         finish();

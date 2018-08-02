@@ -9,6 +9,7 @@ public class LinkDBHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "links.db";
     private static final int DATABASE_VERSION = 1;
 
+
     public static final String TABLE_LINKS = "links";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_URL = "url";
