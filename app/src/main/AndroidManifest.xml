@@ -13,13 +13,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver android:process = ":remote" android:name=".utils.AlarmReceiver"></receiver>
-        <activity android:name=".domain.main.MainActivity">
+        <activity android:name=".domain.main.MainActivity"
+            android:screenOrientation="portrait">
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".domain.image.ImageActivity"></activity>
+        <activity android:name=".domain.image.ImageActivity"
+            android:screenOrientation="portrait">
+
+
+        </activity>
     </application>
 
 </manifest>
